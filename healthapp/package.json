@@ -7,12 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "calculateBmi": "tsc && node bmiCalculator.ts $*",
-    "calculateExercises": "tsc && node exerciseCalculator.ts $*"
+    "calculateExercises": "tsc && node exerciseCalculator.ts $*",
+    "start": "tsc && node index.ts",
+    "dev": "concurrently \"tsc --watch\" \"node --watch index.ts\""
   },
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@types/node": "^25.9.1"
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1",
+    "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
