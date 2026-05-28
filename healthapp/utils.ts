@@ -1,5 +1,5 @@
-export const isNotNumber = (argument: any): boolean => {
-  return isNaN(Number(argument)) || argument === "";
+export const isNotNumber = (argument: unknown): boolean => {
+  return isNaN(Number(argument)) || String(argument) === "";
 };
 
 export const parseNumberArgument = (argument: string, name: string): number => {

@@ -13,13 +13,21 @@ app.get('/bmi', (req: Request, res: Response) => {
   const height = req.query.height;
   const weight = req.query.weight;
 
+  if (Array.isArray(height) || Array.isArray(weight)) {
+    return res.status(400).json({ error: 'invalid parameters' });
+  }
+
+  if (typeof height !== 'string' || typeof weight !== 'string') {
+    return res.status(400).json({ error: 'invalid parameters' });
+  }
+
   if (isNotNumber(height) || isNotNumber(weight)) {
     return res.status(400).json({ error: 'invalid parameters' });
   }
 
   try {
-    const heightNum = parseNumberArgument(String(height), 'height');
-    const weightNum = parseNumberArgument(String(weight), 'weight');
+    const heightNum = parseNumberArgument(height, 'height');
+    const weightNum = parseNumberArgument(weight, 'weight');
     const bmi = bmicalculator(heightNum, weightNum);
 
     return res.json({
@@ -28,7 +36,7 @@ app.get('/bmi', (req: Request, res: Response) => {
       bmi,
     });
   } catch (error) {
-    return res.status(400).json({ error: 'invalid parameters' });
+    return res.status(400).json({ error: error, message: 'invalid parameters' });
   }
 });
 
