@@ -7,8 +7,8 @@ import { calculateExercises } from './exerciseCalculator.ts';
 const app = express();
 app.use(express.json());
 
-app.get('/', (_req, res) => {
-  res.send('Hello full stack!');
+app.get('/hello', (_req, res) => {
+  res.send('Hello Full Stack!');
 });
 
 app.get('/bmi', (req: Request, res: Response) => {
@@ -16,15 +16,15 @@ app.get('/bmi', (req: Request, res: Response) => {
   const weight = req.query.weight;
 
   if (Array.isArray(height) || Array.isArray(weight)) {
-    return res.status(400).json({ error: 'invalid parameters' });
+    return res.status(400).json({ error: 'malformatted parameters' });
   }
 
   if (typeof height !== 'string' || typeof weight !== 'string') {
-    return res.status(400).json({ error: 'invalid parameters' });
+    return res.status(400).json({ error: 'malformatted parameters' });
   }
 
   if (isNotNumber(height) || isNotNumber(weight)) {
-    return res.status(400).json({ error: 'invalid parameters' });
+    return res.status(400).json({ error: 'malformatted parameters' });
   }
 
   try {
@@ -63,7 +63,7 @@ app.post('/exercises', (req: Request, res: Response) => {
   return res.json(result);
 });
 
-const PORT = 3003;
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
