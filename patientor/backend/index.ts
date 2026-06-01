@@ -20,23 +20,28 @@ app.get('/api/ping', (_req, res) => {
   res.send('pong');
 });
 
+function getModuleExport<T>(mod: unknown): T {
+  if (mod && typeof mod === 'object' && 'default' in mod) {
+    const rec = mod as Record<string, unknown>;
+    return rec['default'] as T;
+  }
+  return mod as T;
+}
+
 app.get('/api/diagnoses', (_req, res) => {
-  const d = (diagnoses as any)?.default ?? diagnoses;
-  const result: Diagnosis[] = d as Diagnosis[];
+  const result = getModuleExport<Diagnosis[]>(diagnoses);
   res.json(result);
 });
 
 app.get('/api/patients', (_req, res) => {
-  const p = (patients as any)?.default ?? patients;
-  const patientsData: Patient[] = p as Patient[];
-  const result: NonSensitivePatient[] = patientsData.map(({ ssn, ...rest }) => rest);
+  const patientsData = getModuleExport<Patient[]>(patients);
+  const result: NonSensitivePatient[] = patientsData.map(({ ssn: _ssn, ...rest }) => rest);
   res.json(result);
 });
 
 app.post('/api/patients', (req, res) => {
   try {
-    const p = (patients as any)?.default ?? patients;
-    const patientsData: Patient[] = p as Patient[];
+    const patientsData = getModuleExport<Patient[]>(patients);
     const newPatientData: NewPatient = toNewPatient(req.body);
     const newPatient: Patient = { id: uuid(), ...newPatientData };
     patientsData.push(newPatient);
