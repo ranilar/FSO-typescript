@@ -38,7 +38,11 @@ jobs:
 
       - name: Install Playwright browsers
         working-directory: ./healthapp-tests
-        run: npx playwright install --with-deps chromium
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          npx playwright install --with-deps chromium
 
       - name: Run e2e tests
         working-directory: ./healthapp-tests
