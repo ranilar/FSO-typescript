@@ -2,7 +2,8 @@ import express from 'express';
 import diagnoses from '../data/diagnoses.ts';
 import patients from '../data/patients.ts';
 import { v1 as uuid } from 'uuid';
-import type { Diagnosis, Patient, NonSensitivePatient } from './types.ts';
+import type { Diagnosis, Patient, NonSensitivePatient, NewPatient } from './types.ts';
+import { toNewPatient } from './utils.ts';
 
 const app = express();
 app.use(express.json());
@@ -33,12 +34,17 @@ app.get('/api/patients', (_req, res) => {
 });
 
 app.post('/api/patients', (req, res) => {
-  const p = (patients as any)?.default ?? patients;
-  const patientsData: Patient[] = p as Patient[];
-  const body = req.body as Omit<Patient, 'id'>;
-  const newPatient: Patient = { id: uuid(), ...body };
-  patientsData.push(newPatient);
-  res.json(newPatient);
+  try {
+    const p = (patients as any)?.default ?? patients;
+    const patientsData: Patient[] = p as Patient[];
+    const newPatientData: NewPatient = toNewPatient(req.body);
+    const newPatient: Patient = { id: uuid(), ...newPatientData };
+    patientsData.push(newPatient);
+    res.json(newPatient);
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+    res.status(400).send({ error: errorMessage });
+  }
 });
 
 app.listen(PORT, () => {
