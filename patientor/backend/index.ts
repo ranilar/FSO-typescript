@@ -1,6 +1,7 @@
 import express from 'express';
 import diagnoses from '../data/diagnoses.ts';
 import patients from '../data/patients.ts';
+import { v1 as uuid } from 'uuid';
 import type { Diagnosis, Patient, NonSensitivePatient } from './types.ts';
 
 const app = express();
@@ -29,6 +30,15 @@ app.get('/api/patients', (_req, res) => {
   const patientsData: Patient[] = p as Patient[];
   const result: NonSensitivePatient[] = patientsData.map(({ ssn, ...rest }) => rest);
   res.json(result);
+});
+
+app.post('/api/patients', (req, res) => {
+  const p = (patients as any)?.default ?? patients;
+  const patientsData: Patient[] = p as Patient[];
+  const body = req.body as Omit<Patient, 'id'>;
+  const newPatient: Patient = { id: uuid(), ...body };
+  patientsData.push(newPatient);
+  res.json(newPatient);
 });
 
 app.listen(PORT, () => {

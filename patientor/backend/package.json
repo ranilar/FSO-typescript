@@ -17,6 +17,7 @@
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/express": "^5.0.6",
+    "@types/uuid": "^8.3.4",
     "concurrently": "^10.0.0",
     "eslint": "^10.4.0",
     "typescript": "^6.0.3",
@@ -24,5 +25,8 @@
   },
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "optionalDependencies": {
+    "uuid": "^8.3.2"
   }
 }
