@@ -2,7 +2,7 @@ name: Health app E2E Tests
 
 on:
   push:
-    branches: [main, xmaster]
+    branches: [main, master]
 
 jobs:
   test:
