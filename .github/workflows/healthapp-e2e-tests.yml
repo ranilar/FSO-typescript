@@ -29,8 +29,12 @@ jobs:
 
       - name: Start healthapp server
         working-directory: ./healthapp
+        env:
+          HOST: 0.0.0.0
+          PORT: 3000
+          CI: true
         run: |
-          npm start > /dev/null 2>&1 &
+          npm start > server.log 2>&1 &
           echo $! > server.pid
 
       - name: Install test dependencies
@@ -40,8 +44,17 @@ jobs:
       - name: Run e2e tests
         working-directory: ./healthapp-tests
         run: |
-          npx wait-on http://localhost:3000
+          npx wait-on http://127.0.0.1:3000 --timeout 60000
           npm test
+
+      - name: Print Server Logs on Failure
+        if: failure()
+        working-directory: ./healthapp
+        run: |
+          if [ -f server.log ]; then
+            echo "=== SERVER LOGS ==="
+            cat server.log
+          fi
 
       - name: Upload test report
         uses: actions/upload-artifact@v5
