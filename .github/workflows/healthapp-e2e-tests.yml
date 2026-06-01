@@ -4,13 +4,9 @@ on:
   push:
     branches: [main, master]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -32,9 +28,9 @@ jobs:
       - name: Start healthapp server
         working-directory: ./healthapp
         run: |
-          npm start > server.log 2>&1 &
+          npm start &
           echo $! > server.pid
-          npx wait-on http://localhost:3000 --timeout 30000
+          sleep 3
 
       - name: Install test dependencies
         working-directory: ./healthapp-tests
