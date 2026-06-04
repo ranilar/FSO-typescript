@@ -30,8 +30,9 @@ jobs:
       - name: Start healthapp server
         working-directory: ./healthapp
         run: |
-          npm start &
+          nohup npm start > healthapp.log 2>&1 &
           echo $! > server.pid
+          sleep 1
 
       - name: Install test dependencies
         working-directory: ./healthapp-tests
