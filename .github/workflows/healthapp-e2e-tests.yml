@@ -37,6 +37,7 @@ jobs:
 
       - name: Install Playwright browsers
         working-directory: ./healthapp-tests
+        timeout-minutes: 10
         run: npx playwright install chromium
 
       - name: Start healthapp server
