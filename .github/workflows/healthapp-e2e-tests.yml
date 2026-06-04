@@ -43,7 +43,7 @@ jobs:
       - name: Start healthapp server
         working-directory: ./healthapp
         run: |
-          npm start &
+          nohup npm start > /tmp/healthapp.log 2>&1 &
           echo $! > server.pid
           sleep 2
 
