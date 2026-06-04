@@ -25,19 +25,25 @@ jobs:
         working-directory: ./healthapp
         run: npm run lint
 
+      - name: Install test dependencies
+        working-directory: ./healthapp-tests
+        run: npm install
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}
+
+      - name: Install Playwright browsers
+        working-directory: ./healthapp-tests
+        run: npx playwright install --with-deps chromium
+
       - name: Start healthapp server
         working-directory: ./healthapp
         run: |
           npm start &
           echo $! > server.pid
-
-      - name: Install test dependencies
-        working-directory: ./healthapp-tests
-        run: npm install
-
-      - name: Install Playwright browsers
-        working-directory: ./healthapp-tests
-        run: npx playwright install --with-deps chromium
 
       - name: Run e2e tests
         working-directory: ./healthapp-tests
