@@ -37,7 +37,7 @@ jobs:
 
       - name: Install Playwright browsers
         working-directory: ./healthapp-tests
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Start healthapp server
         working-directory: ./healthapp
