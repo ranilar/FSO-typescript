@@ -45,6 +45,20 @@ jobs:
         run: |
           npm start &
           echo $! > server.pid
+          sleep 2
+
+      - name: Verify healthapp server is running
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:3000/hello > /dev/null 2>&1; then
+              echo "Server is up"
+              exit 0
+            fi
+            echo "Waiting for server... ($i/10)"
+            sleep 1
+          done
+          echo "Server did not start"
+          exit 1
 
       - name: Run e2e tests
         working-directory: ./healthapp-tests
