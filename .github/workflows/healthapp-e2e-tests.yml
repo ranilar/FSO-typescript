@@ -7,8 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.45.0-noble
 
     steps:
       - name: Checkout code
@@ -30,13 +28,16 @@ jobs:
       - name: Start healthapp server
         working-directory: ./healthapp
         run: |
-          nohup npm start > healthapp.log 2>&1 &
+          npm start &
           echo $! > server.pid
-          sleep 1
 
       - name: Install test dependencies
         working-directory: ./healthapp-tests
         run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: ./healthapp-tests
+        run: npx playwright install --with-deps chromium
 
       - name: Run e2e tests
         working-directory: ./healthapp-tests
