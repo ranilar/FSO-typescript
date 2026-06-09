@@ -12,8 +12,12 @@ export const Gender = {
 
 export type Gender = typeof Gender[keyof typeof Gender];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Entry {
+  id: string;
+  date: string;
+  specialist: string;
+  description: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 export interface Patient {

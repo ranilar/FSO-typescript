@@ -38,7 +38,8 @@ app.get('/api/patients/:id', (req, res) => {
   const patient = patientsData.find(p => p.id === req.params.id);
   if (patient) {
     console.log("patient found")
-    res.json(patient);
+    const patientWithEntries = { ...patient, entries: patient.entries ?? [] };
+    res.json(patientWithEntries);
   } else {
     res.sendStatus(404);
   }

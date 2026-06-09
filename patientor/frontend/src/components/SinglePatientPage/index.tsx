@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { Container, Typography, List, ListItem, Divider } from '@mui/material';
+import patientService from '../../services/patients';
+import { Patient } from '../../types';
+
+const SinglePatientPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetch = async () => {
+      try {
+        const data = await patientService.getById(id);
+        setPatient(data);
+      } catch (e) {
+        setError((e as Error).message);
+      }
+    };
+    void fetch();
+  }, [id]);
+
+  if (error) return <div>Error: {error}</div>;
+  if (!patient) return <div>Loading...</div>;
+
+  return (
+    <Container>
+      <Typography variant="h4">{patient.name}</Typography>
+      <Typography>SSN: {patient.ssn ?? '—'}</Typography>
+      <Typography>Occupation: {patient.occupation}</Typography>
+      <Typography>Date of birth: {patient.dateOfBirth ?? '—'}</Typography>
+
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h6">Entries</Typography>
+      <List>
+        {patient.entries.length === 0 ? (
+          <ListItem>No entries</ListItem>
+        ) : (
+          patient.entries.map((entry) => (
+            <ListItem key={entry.id}>
+              <div>
+                <strong>{entry.date}</strong> — {entry.specialist}
+                <div>{entry.description}</div>
+                {entry.diagnosisCodes?.length ? (
+                  <div>
+                    Diagnosis codes:{' '}
+                    {entry.diagnosisCodes.map(code => <Link key={code} to={`/diagnoses/${code}`}>{code}</Link>)}
+                  </div>
+                ) : null}
+              </div>
+            </ListItem>
+          ))
+        )}
+      </List>
+    </Container>
+  );
+};
+
+export default SinglePatientPage;
