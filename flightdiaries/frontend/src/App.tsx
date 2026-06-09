@@ -5,6 +5,7 @@ function App() {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
+  const [createError, setCreateError] = useState<string | null>(null)
 
   const [date, setDate] = useState<string>('')
   const [weather, setWeather] = useState<string>('')
@@ -30,6 +31,8 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    setCreateError(null)
+
     const newEntry: NewDiaryEntry = {
       date,
       weather: weather as any,
@@ -41,11 +44,11 @@ function App() {
       const created = await create(newEntry)
       setDiaries(prev => prev.concat(created))
       setDate('')
-      setWeather('sunny')
-      setVisibility('great')
+      setWeather('')
+      setVisibility('')
       setComment('')
     } catch (err) {
-      setError((err as Error).message)
+      setCreateError((err as Error).message)
     }
   }
 
@@ -56,6 +59,7 @@ function App() {
     <div>
       <h1>Flight Diaries</h1>
       <form onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
+        {createError ? <div style={{ color: 'red', marginBottom: 8 }}>Error: {createError}</div> : null}
         <div>
           <label>
             Date:{' '}
