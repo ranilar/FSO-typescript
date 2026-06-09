@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAll, create, type DiaryEntry, type NewDiaryEntry } from './services/diaries'
+import { getAll, create, type DiaryEntry, type NewDiaryEntry, type Weather, type Visibility } from './services/diaries'
 
 function App() {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([])
@@ -8,8 +8,8 @@ function App() {
   const [createError, setCreateError] = useState<string | null>(null)
 
   const [date, setDate] = useState<string>('')
-  const [weather, setWeather] = useState<string>('')
-  const [visibility, setVisibility] = useState<string>('')
+  const [weather, setWeather] = useState<Weather>('sunny')
+  const [visibility, setVisibility] = useState<Visibility>('great')
   const [comment, setComment] = useState<string>('')
 
   useEffect(() => {
@@ -35,8 +35,8 @@ function App() {
 
     const newEntry: NewDiaryEntry = {
       date,
-      weather: weather as any,
-      visibility: visibility as any,
+      weather,
+      visibility,
       comment: comment || undefined,
     }
 
@@ -44,8 +44,8 @@ function App() {
       const created = await create(newEntry)
       setDiaries(prev => prev.concat(created))
       setDate('')
-      setWeather('')
-      setVisibility('')
+      setWeather('sunny')
+      setVisibility('great')
       setComment('')
     } catch (err) {
       setCreateError((err as Error).message)
@@ -63,21 +63,42 @@ function App() {
         <div>
           <label>
             Date:{' '}
-            <input type="text" value={date} onChange={e => setDate(e.target.value)} required />
+            <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
           </label>
         </div>
-        <div>
+        <fieldset>
+          <legend>Weather</legend>
           <label>
-            Weather:{' '}
-            <input type="text" value={weather} onChange={e => setWeather(e.target.value)} />
+            <input type="radio" name="weather" value="sunny" checked={weather === 'sunny'} onChange={e => setWeather(e.target.value as Weather)} /> sunny
           </label>
-        </div>
-        <div>
           <label>
-            Visibility:{' '}
-            <input type="text" value={visibility} onChange={e => setVisibility(e.target.value)} />
+            <input type="radio" name="weather" value="rainy" checked={weather === 'rainy'} onChange={e => setWeather(e.target.value as Weather)} /> rainy
           </label>
-        </div>
+          <label>
+            <input type="radio" name="weather" value="cloudy" checked={weather === 'cloudy'} onChange={e => setWeather(e.target.value as Weather)} /> cloudy
+          </label>
+          <label>
+            <input type="radio" name="weather" value="stormy" checked={weather === 'stormy'} onChange={e => setWeather(e.target.value as Weather)} /> stormy
+          </label>
+          <label>
+            <input type="radio" name="weather" value="windy" checked={weather === 'windy'} onChange={e => setWeather(e.target.value as Weather)} /> windy
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Visibility</legend>
+          <label>
+            <input type="radio" name="visibility" value="great" checked={visibility === 'great'} onChange={e => setVisibility(e.target.value as Visibility)} /> great
+          </label>
+          <label>
+            <input type="radio" name="visibility" value="good" checked={visibility === 'good'} onChange={e => setVisibility(e.target.value as Visibility)} /> good
+          </label>
+          <label>
+            <input type="radio" name="visibility" value="ok" checked={visibility === 'ok'} onChange={e => setVisibility(e.target.value as Visibility)} /> ok
+          </label>
+          <label>
+            <input type="radio" name="visibility" value="poor" checked={visibility === 'poor'} onChange={e => setVisibility(e.target.value as Visibility)} /> poor
+          </label>
+        </fieldset>
         <div>
           <label>
             Comment:{' '}

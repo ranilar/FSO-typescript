@@ -49,7 +49,7 @@ const create = async (entry: NewDiaryEntry): Promise<DiaryEntry> => {
               errorMessage = body.error;
             } else if (Array.isArray(body.error)) {
               const issues = body.error;
-              const messages: string[] = issues.map((issue: any) => {
+              const messages: string[] = issues.map((issue: any) => { // eslint-disable-line
                 const path = Array.isArray(issue.path) ? issue.path.join('.') : (issue.path ?? '')
                 if (issue.message) {
                   return path ? `${path}: ${issue.message}` : issue.message
@@ -87,7 +87,7 @@ const create = async (entry: NewDiaryEntry): Promise<DiaryEntry> => {
         const text = await res.text();
         if (text) errorMessage = text;
       }
-    } catch (e) {
+    } catch (e) { console.log(e)
     }
 
     throw new Error(errorMessage);
