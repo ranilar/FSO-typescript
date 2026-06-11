@@ -67,7 +67,7 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
           labelId="entry-type-label"
           value={entryType}
           label="Entry type"
-          onChange={(e) => setEntryType(e.target.value as any)}
+          onChange={(e) => setEntryType(e.target.value as 'Hospital'|'OccupationalHealthcare'|'HealthCheck')}
         >
           <MenuItem value="HealthCheck">Health Check</MenuItem>
           <MenuItem value="OccupationalHealthcare">Occupational Healthcare</MenuItem>
@@ -79,7 +79,7 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
         e.preventDefault();
         setFormError(null);
         if (!patient) return;
-        let payload: any = {
+        const payload: Record<string, unknown> = {
           type: entryType,
           date,
           specialist,
@@ -100,12 +100,19 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
         }
 
         try {
-          const newEntry = await patientService.addEntry(patient.id, payload);
+          const newEntry = await patientService.addEntry(patient.id, payload as unknown);
           setPatient({ ...patient, entries: patient.entries.concat(newEntry) });
           setDate(''); setSpecialist(''); setDescription(''); setDischargeDate(''); setDischargeCriteria(''); setDiagnosisCodes([]); setEmployerName(''); setSickStart(''); setSickEnd(''); setHealthCheckRating('');
         } catch (err: unknown) {
-          const msg = (err as any)?.response?.data?.error || (err as Error).message || 'Unknown error';
-          setFormError(String(msg));
+          const extractError = (error: unknown) => {
+            if (error instanceof Error) return error.message;
+            if (typeof error === 'object' && error !== null) {
+              const e = error as { response?: { data?: { error?: string } } };
+              return e.response?.data?.error ?? JSON.stringify(error);
+            }
+            return String(error);
+          };
+          setFormError(extractError(err));
         }
       }} sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 600 }}>
         <TextField label="Date" type="date" InputLabelProps={{ shrink: true }} value={date} onChange={(e) => setDate(e.target.value)} />

@@ -4,7 +4,7 @@ import patients from '../data/patients.ts';
 import { v1 as uuid } from 'uuid';
 import type { Diagnosis, Patient, NonSensitivePatient, NewPatient, Entry } from './types.ts';
 import { toNewPatient, toNewEntry } from './utils.ts';
-import { ZodError } from "zod"
+import { ZodError } from "zod";
 
 const app = express();
 app.use(express.json());
