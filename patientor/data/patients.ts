@@ -6,6 +6,20 @@ const data = [
         "ssn": "090786-122X",
         "gender": "male",
         "occupation": "New york city cop"
+        ,
+        "entries": [
+            {
+                "id": "a1b2c3d4-0000-4000-8000-000000000000",
+                "date": "2019-10-05",
+                "type": "Hospital",
+                "specialist": "MD House",
+                "description": "Thumb has healed",
+                "discharge": {
+                    "date": "2019-10-12",
+                    "criteria": "Thumb mobility restored"
+                }
+            }
+        ]
     },
     {
         "id": "d2773598-f723-11e9-8f0b-362b9e155667",

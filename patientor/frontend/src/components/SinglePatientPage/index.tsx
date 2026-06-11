@@ -166,7 +166,7 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
             ))}
           </Select>
         </FormControl>
-        <Button type="submit" variant="contained">Add Entry</Button>
+        <Button type="submit" variant="contained">Add New Entry</Button>
       </Box>
     </Container>
   );
