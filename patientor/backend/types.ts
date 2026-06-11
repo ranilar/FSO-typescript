@@ -12,13 +12,35 @@ export const Gender = {
 
 export type Gender = typeof Gender[keyof typeof Gender];
 
-export interface Entry {
+
+export interface HospitalEntry {
   id: string;
   date: string;
+  type: "Hospital";
   specialist: string;
-  description: string;
   diagnosisCodes?: Array<Diagnosis['code']>;
+  description: string;
+  discharge: {
+    date: string;
+    criteria: string;
+  };
 }
+
+export interface OccupationalHealthcareEntry {
+  id: string;
+  date: string;
+  type: "OccupationalHealthcare";
+  specialist: string;
+  employerName: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
+  description: string;
+  sickLeave?: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export type Entry = HospitalEntry | OccupationalHealthcareEntry;
 
 export interface Patient {
   id: string;
@@ -30,5 +52,5 @@ export interface Patient {
   entries: Entry[];
 }
 
-export type NewPatient = Omit<Patient, 'id'>;
+export type NewPatient = Omit<Patient, 'id' | 'entries'>;
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;

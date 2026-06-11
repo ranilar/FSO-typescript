@@ -55,7 +55,7 @@ app.post('/api/patients', (req, res) => {
   try {
     const patientsData = getModuleExport<Patient[]>(patients);
     const newPatientData: NewPatient = toNewPatient(req.body);
-    const newPatient: Patient = { id: uuid(), ...newPatientData };
+    const newPatient: Patient = { id: uuid(), ...newPatientData, entries: [] };
     patientsData.push(newPatient);
     res.json(newPatient);
   } catch (e: unknown) {
