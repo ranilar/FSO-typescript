@@ -5,7 +5,7 @@ import { Button, Divider, Container, Typography } from '@mui/material';
 
 
 import { apiBaseUrl } from "./constants";
-import { Patient } from "./types";
+import { Patient, Diagnosis } from "./types";
 
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
@@ -13,6 +13,7 @@ import SinglePatientPage from "./components/SinglePatientPage";
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
@@ -21,7 +22,12 @@ const App = () => {
       const patients = await patientService.getAll();
       setPatients(patients);
     };
+    const fetchDiagnoses = async () => {
+      const { data } = await axios.get<Diagnosis[]>(`${apiBaseUrl}/diagnoses`);
+      setDiagnoses(data);
+    };
     void fetchPatientList();
+    void fetchDiagnoses();
   }, []);
   
   return (
@@ -37,7 +43,7 @@ const App = () => {
           <Divider sx={{ marginY: 2 }} />
           <Routes>
             <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} />} />
-            <Route path="/patients/:id" element={<SinglePatientPage />} />
+            <Route path="/patients/:id" element={<SinglePatientPage diagnoses={diagnoses} />} />
           </Routes>
         </Container>
       </Router>

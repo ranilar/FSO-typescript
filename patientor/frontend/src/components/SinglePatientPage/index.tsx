@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Container, Typography, List, ListItem, Divider } from '@mui/material';
 import patientService from '../../services/patients';
-import { Patient } from '../../types';
+import { Patient, Diagnosis } from '../../types';
 
-const SinglePatientPage = () => {
+const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +45,12 @@ const SinglePatientPage = () => {
                 <div>{entry.description}</div>
                 {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 ? (
                   <ul>
-                    {entry.diagnosisCodes.map(code => (
-                      <p>{code}</p>
-                    ))}
+                    {entry.diagnosisCodes.map(code => {
+                      const diag = diagnoses.find(d => d.code === code);
+                      return (
+                        <li key={code}>{code} {diag ? diag.name : ''}</li>
+                      );
+                    })}
                   </ul>
                 ) : null}
               </div>
