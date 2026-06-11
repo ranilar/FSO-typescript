@@ -23,3 +23,42 @@ export const isNewPatient = (obj: unknown): obj is NewPatient => {
     return false;
   }
 };
+
+const baseEntry = z.object({
+  date: z.string().refine((s) => Boolean(Date.parse(s)), { message: 'Invalid date' }),
+  specialist: z.string(),
+  description: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+});
+
+const hospitalEntrySchema = baseEntry.extend({
+  type: z.literal('Hospital'),
+  discharge: z.object({
+    date: z.string().refine((s) => Boolean(Date.parse(s)), { message: 'Invalid date' }),
+    criteria: z.string()
+  })
+});
+
+const occupationalEntrySchema = baseEntry.extend({
+  type: z.literal('OccupationalHealthcare'),
+  employerName: z.string(),
+  sickLeave: z.object({
+    startDate: z.string().refine((s) => Boolean(Date.parse(s)), { message: 'Invalid date' }),
+    endDate: z.string().refine((s) => Boolean(Date.parse(s)), { message: 'Invalid date' })
+  }).optional()
+});
+
+const entrySchema = z.union([hospitalEntrySchema, occupationalEntrySchema]);
+
+export const toNewEntry = (object: unknown) => {
+  return entrySchema.parse(object);
+};
+
+export const isNewEntry = (obj: unknown) => {
+  try {
+    entrySchema.parse(obj);
+    return true;
+  } catch {
+    return false;
+  }
+};

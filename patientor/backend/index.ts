@@ -2,8 +2,8 @@ import express from 'express';
 import diagnoses from '../data/diagnoses.ts';
 import patients from '../data/patients.ts';
 import { v1 as uuid } from 'uuid';
-import type { Diagnosis, Patient, NonSensitivePatient, NewPatient } from './types.ts';
-import { toNewPatient } from './utils.ts';
+import type { Diagnosis, Patient, NonSensitivePatient, NewPatient, Entry } from './types.ts';
+import { toNewPatient, toNewEntry } from './utils.ts';
 
 const app = express();
 app.use(express.json());
@@ -58,6 +58,25 @@ app.post('/api/patients', (req, res) => {
     const newPatient: Patient = { id: uuid(), ...newPatientData, entries: [] };
     patientsData.push(newPatient);
     res.json(newPatient);
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+    res.status(400).send({ error: errorMessage });
+  }
+});
+
+app.post('/api/patients/:id/entries', (req, res) => {
+  try {
+    const patientsData = getModuleExport<Patient[]>(patients);
+    const patient = patientsData.find(p => p.id === req.params.id);
+    if (!patient) { res.sendStatus(404); return; }
+
+    const newEntryData = toNewEntry(req.body);
+    const newEntry: Entry = { id: uuid(), ...newEntryData };
+
+    patient.entries = patient.entries ?? [];
+    patient.entries.push(newEntry);
+
+    res.json(newEntry);
   } catch (e: unknown) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
     res.status(400).send({ error: errorMessage });
