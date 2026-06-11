@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Typography, List, ListItem, Divider, TextField, Button, Box, Alert } from '@mui/material';
+import { Container, Typography, List, ListItem, Divider, TextField, Button, Box, Alert, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import patientService from '../../services/patients';
 import { Patient, Diagnosis } from '../../types';
 import EntryDetails from '../EntryDetails';
@@ -16,6 +16,11 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
   const [dischargeDate, setDischargeDate] = useState('');
   const [dischargeCriteria, setDischargeCriteria] = useState('');
   const [diagnosisCodes, setDiagnosisCodes] = useState('');
+  const [entryType, setEntryType] = useState<'Hospital'|'OccupationalHealthcare'|'HealthCheck'>('HealthCheck');
+  const [employerName, setEmployerName] = useState('');
+  const [sickStart, setSickStart] = useState('');
+  const [sickEnd, setSickEnd] = useState('');
+  const [healthCheckRating, setHealthCheckRating] = useState<number | ''>('');
 
   useEffect(() => {
     if (!id) return;
@@ -55,22 +60,41 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
       </List>
 
       <Divider sx={{ my: 2 }} />
-      <Typography variant="h6">Add Hospital Entry</Typography>
+      <Typography variant="h6">New Entry</Typography>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel id="entry-type-label">Entry type</InputLabel>
+        <Select
+          labelId="entry-type-label"
+          value={entryType}
+          label="Entry type"
+          onChange={(e) => setEntryType(e.target.value as any)}
+        >
+          <MenuItem value="HealthCheck">Health Check</MenuItem>
+          <MenuItem value="OccupationalHealthcare">Occupational Healthcare</MenuItem>
+          <MenuItem value="Hospital">Hospital</MenuItem>
+        </Select>
+      </FormControl>
       {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
       <Box component="form" onSubmit={async (e) => {
         e.preventDefault();
         setFormError(null);
         if (!patient) return;
-        const payload: any = {
-          type: 'Hospital',
+        let payload: any = {
+          type: entryType,
           date,
           specialist,
-          description,
-          discharge: {
-            date: dischargeDate,
-            criteria: dischargeCriteria
-          }
+          description
         };
+        if (entryType === 'Hospital') {
+          payload.discharge = { date: dischargeDate, criteria: dischargeCriteria };
+        }
+        if (entryType === 'OccupationalHealthcare') {
+          payload.employerName = employerName;
+          if (sickStart || sickEnd) payload.sickLeave = { startDate: sickStart, endDate: sickEnd };
+        }
+        if (entryType === 'HealthCheck') {
+          payload.healthCheckRating = healthCheckRating === '' ? undefined : Number(healthCheckRating);
+        }
         if (diagnosisCodes.trim()) {
           payload.diagnosisCodes = diagnosisCodes.split(',').map((s: string) => s.trim()).filter(Boolean);
         }
@@ -87,8 +111,22 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
         <TextField label="Date" value={date} onChange={(e) => setDate(e.target.value)} />
         <TextField label="Specialist" value={specialist} onChange={(e) => setSpecialist(e.target.value)} />
         <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} multiline rows={3} />
-        <TextField label="Discharge Date" value={dischargeDate} onChange={(e) => setDischargeDate(e.target.value)} />
-        <TextField label="Discharge Criteria" value={dischargeCriteria} onChange={(e) => setDischargeCriteria(e.target.value)} />
+        {entryType === 'Hospital' && (
+          <>
+            <TextField label="Discharge Date" value={dischargeDate} onChange={(e) => setDischargeDate(e.target.value)} />
+            <TextField label="Discharge Criteria" value={dischargeCriteria} onChange={(e) => setDischargeCriteria(e.target.value)} />
+          </>
+        )}
+        {entryType === 'OccupationalHealthcare' && (
+          <>
+            <TextField label="Employer Name" value={employerName} onChange={(e) => setEmployerName(e.target.value)} />
+            <TextField label="Sick Leave Start" value={sickStart} onChange={(e) => setSickStart(e.target.value)} />
+            <TextField label="Sick Leave End" value={sickEnd} onChange={(e) => setSickEnd(e.target.value)} />
+          </>
+        )}
+        {entryType === 'HealthCheck' && (
+          <TextField label="Health Check Rating (0-3)" value={String(healthCheckRating)} onChange={(e) => setHealthCheckRating(e.target.value === '' ? '' : Number(e.target.value))} />
+        )}
         <TextField label="Diagnosis Codes" value={diagnosisCodes} onChange={(e) => setDiagnosisCodes(e.target.value)} />
         <Button type="submit" variant="contained">Add Entry</Button>
       </Box>
