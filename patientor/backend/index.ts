@@ -37,7 +37,7 @@ app.get('/api/patients/:id', (req, res) => {
   const patientsData = getModuleExport<Patient[]>(patients);
   const patient = patientsData.find(p => p.id === req.params.id);
   if (patient) {
-    console.log("patient found")
+    console.log("patient found");
     const patientWithEntries = { ...patient, entries: patient.entries ?? [] };
     res.json(patientWithEntries);
   } else {
