@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { Entry, Diagnosis } from '../../types';
 
@@ -47,12 +46,33 @@ const OccupationalEntryView = ({ entry, diagnoses }: { entry: Extract<Entry, { t
   </Card>
 );
 
+const HealthCheckEntryView = ({ entry, diagnoses }: { entry: Extract<Entry, { type: 'HealthCheck' }>; diagnoses?: Diagnosis[] }) => (
+  <Card variant="outlined" sx={{ marginBottom: 2 }}>
+    <CardContent>
+      <Typography variant="subtitle1">{entry.date} ❤️</Typography>
+      <Typography>{entry.description}</Typography>
+      <Typography variant="body2">specialist: {entry.specialist}</Typography>
+      <Typography variant="body2">health rating: {entry.healthCheckRating}</Typography>
+      {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+        <Box component="ul" sx={{ marginTop: 1 }}>
+          {entry.diagnosisCodes.map(code => {
+            const diag = diagnoses?.find(d => d.code === code);
+            return <li key={code}>{code}{diag ? ` ${diag.name}` : ''}</li>;
+          })}
+        </Box>
+      )}
+    </CardContent>
+  </Card>
+);
+
 const EntryDetails = ({ entry, diagnoses }: { entry: Entry; diagnoses?: Diagnosis[] }) => {
   switch (entry.type) {
     case 'Hospital':
       return <HospitalEntryView entry={entry} diagnoses={diagnoses} />;
     case 'OccupationalHealthcare':
       return <OccupationalEntryView entry={entry} diagnoses={diagnoses} />;
+    case 'HealthCheck':
+      return <HealthCheckEntryView entry={entry} diagnoses={diagnoses} />;
     default:
       return assertNever(entry as never);
   }

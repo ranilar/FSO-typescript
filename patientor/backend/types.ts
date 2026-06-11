@@ -40,7 +40,26 @@ export interface OccupationalHealthcareEntry {
   };
 }
 
-export type Entry = HospitalEntry | OccupationalHealthcareEntry;
+export const HealthCheckRating = {
+  Healthy: 0,
+  LowRisk: 1,
+  HighRisk: 2,
+  CriticalRisk: 3,
+} as const;
+
+export type HealthCheckRating = typeof HealthCheckRating[keyof typeof HealthCheckRating];
+
+export interface HealthCheckEntry {
+  id: string;
+  date: string;
+  type: "HealthCheck";
+  specialist: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
+  description: string;
+  healthCheckRating: HealthCheckRating;
+}
+
+export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
 export interface Patient {
   id: string;

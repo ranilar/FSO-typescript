@@ -48,7 +48,14 @@ const occupationalEntrySchema = baseEntry.extend({
   }).optional()
 });
 
-const entrySchema = z.union([hospitalEntrySchema, occupationalEntrySchema]);
+const healthCheckEntrySchema = baseEntry.extend({
+  type: z.literal('HealthCheck'),
+  healthCheckRating: z.union([
+    z.literal(0), z.literal(1), z.literal(2), z.literal(3)
+  ])
+});
+
+const entrySchema = z.union([hospitalEntrySchema, occupationalEntrySchema, healthCheckEntrySchema]);
 
 export const toNewEntry = (object: unknown) => {
   return entrySchema.parse(object);
