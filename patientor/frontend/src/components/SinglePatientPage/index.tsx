@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Container, Typography, List, ListItem, Divider } from '@mui/material';
 import patientService from '../../services/patients';
 import { Patient, Diagnosis } from '../../types';
+import EntryDetails from '../EntryDetails';
 
 const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
   const { id } = useParams<{ id: string }>();
@@ -40,20 +41,7 @@ const SinglePatientPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
         ) : (
           patient.entries.map((entry) => (
             <ListItem key={entry.id}>
-              <div>
-                <div><strong>{entry.date}</strong></div>
-                <div>{entry.description}</div>
-                {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 ? (
-                  <ul>
-                    {entry.diagnosisCodes.map(code => {
-                      const diag = diagnoses.find(d => d.code === code);
-                      return (
-                        <li key={code}>{code} {diag ? diag.name : ''}</li>
-                      );
-                    })}
-                  </ul>
-                ) : null}
-              </div>
+              <EntryDetails entry={entry} diagnoses={diagnoses} />
             </ListItem>
           ))
         )}
