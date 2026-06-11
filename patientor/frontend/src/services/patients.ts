@@ -25,7 +25,12 @@ const create = async (object: PatientFormValues) => {
   return data;
 };
 
+const addEntry = async (patientId: string, entry: unknown) => {
+  const { data } = await axios.post(`${apiBaseUrl}/patients/${patientId}/entries`, entry);
+  return data;
+};
+
 export default {
-  getAll, create, getById
+  getAll, create, getById, addEntry
 };
 

@@ -4,6 +4,7 @@ import patients from '../data/patients.ts';
 import { v1 as uuid } from 'uuid';
 import type { Diagnosis, Patient, NonSensitivePatient, NewPatient, Entry } from './types.ts';
 import { toNewPatient, toNewEntry } from './utils.ts';
+import { ZodError } from "zod"
 
 const app = express();
 app.use(express.json());
@@ -78,11 +79,21 @@ app.post('/api/patients/:id/entries', (req, res) => {
 
     res.json(newEntry);
   } catch (e: unknown) {
+    if (e instanceof ZodError) {
+      const msg = e.issues
+        .map(i => {
+          const path = i.path && i.path.length ? i.path.join('.') : 'data';
+          return `${path}: ${i.message}`;
+        })
+        .join(', ');
+      res.status(400).send({ error: msg });
+      return;
+    }
+    
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
     res.status(400).send({ error: errorMessage });
   }
 });
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
