@@ -13,7 +13,22 @@ const data = [
         "dateOfBirth": "1979-01-30",
         "ssn": "300179-77A",
         "gender": "male",
-        "occupation": "Cop"
+        "occupation": "Cop",
+        "entries": [
+            {
+                "id": "e1b2c3d4-0000-4000-8000-000000000001",
+                "date": "2019-08-05",
+                "type": "OccupationalHealthcare",
+                "specialist": "Dr. House",
+                "employerName": "Nuclear Plant",
+                "diagnosisCodes": [
+                    "Z57.1",
+                    "Z74.3",
+                    "M51.2"
+                ],
+                "description": "Patient mistakenly found himself in a nuclear plant waste site without protection gear. Very minor radiation poisoning."
+            }
+        ]
     },
     {
         "id": "d27736ec-f723-11e9-8f0b-362b9e155667",

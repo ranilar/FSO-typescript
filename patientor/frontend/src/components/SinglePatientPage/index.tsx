@@ -41,13 +41,14 @@ const SinglePatientPage = () => {
           patient.entries.map((entry) => (
             <ListItem key={entry.id}>
               <div>
-                <strong>{entry.date}</strong> — {entry.specialist}
+                <div><strong>{entry.date}</strong></div>
                 <div>{entry.description}</div>
-                {entry.diagnosisCodes?.length ? (
-                  <div>
-                    Diagnosis codes:{' '}
-                    {entry.diagnosisCodes.map(code => <Link key={code} to={`/diagnoses/${code}`}>{code}</Link>)}
-                  </div>
+                {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 ? (
+                  <ul>
+                    {entry.diagnosisCodes.map(code => (
+                      <p>{code}</p>
+                    ))}
+                  </ul>
                 ) : null}
               </div>
             </ListItem>
