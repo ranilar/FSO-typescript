@@ -25,20 +25,40 @@ jobs:
         working-directory: ./patientor/backend
         run: npm run lint
 
-      - name: Start patientor backend server
-        working-directory: ./patientor/backend
-        run: |
-          npm start &
-          echo $! > server.pid
-          sleep 3
-
       - name: Install test dependencies
         working-directory: ./patientor-api-tests
         run: npm install
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}
+
       - name: Install Playwright browsers
         working-directory: ./patientor-api-tests
-        run: npx playwright install --with-deps chromium
+        timeout-minutes: 10
+        run: npx playwright install chromium
+
+      - name: Start patientor backend server
+        working-directory: ./patientor/backend
+        run: |
+          nohup npm start > /tmp/patientor-backend.log 2>&1 &
+          echo $! > server.pid
+          sleep 2
+
+      - name: Verify patientor backend server is running
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:3001/api/ping > /dev/null 2>&1; then
+              echo "Server is up"
+              exit 0
+            fi
+            echo "Waiting for server... ($i/10)"
+            sleep 1
+          done
+          echo "Server did not start"
+          exit 1
 
       - name: Run API tests
         working-directory: ./patientor-api-tests
