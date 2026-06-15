@@ -41,8 +41,17 @@ jobs:
         working-directory: ./patientor-tests
         run: npm install
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            playwright-browsers-${{ runner.os }}-
+
       - name: Install Playwright browsers
         working-directory: ./patientor-tests
+        timeout-minutes: 10
         run: npx playwright install --with-deps chromium
 
       - name: Wait for servers to start
